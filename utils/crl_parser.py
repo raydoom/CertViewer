@@ -10,3 +10,4 @@ def get_crl_info():
 
     revoked_objects = crl_object.get_issuer()
     print(revoked_objects)
+    return revoked_objects
