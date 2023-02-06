@@ -1,0 +1,7 @@
+*.pyc
+venv
+dist
+build
+.idea
+.DS_Store
+.eggs
