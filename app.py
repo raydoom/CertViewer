@@ -6,64 +6,42 @@ from tkinter.filedialog import *
 
 from utils import cert_parser, crl_parser
 
+file_path = "/Users/maxd/Downloads/1.pem"
 
 # issue = crl_parser.get_crl_info()
+cn, base_info = cert_parser.get_cert_info(file_path)
 
-def selectFile():
-    file_path = askopenfilename()  # 选择打开什么文件，返回文件名
-    print(file_path)
-    return file_path
+root = tkinter.Tk()
+root.title("CertViewer")
+root.geometry('450x600')
+root.resizable(0, 0)
 
+app = tkinter.Canvas(root)
+label_title = tkinter.Label(app, text=cn, padx=10, pady=15,font=("",18,"bold"))
 
-def file_load(tree, label_xiangqing, label_title):
-    x = tree.get_children()
-    for item in x:
-        tree.delete(item)
-    file_path = selectFile()
-    global cn, base_info_jl, base_info_xq
-    cn, base_info_jl, base_info_xq = cert_parser.get_cert_info(file_path)
-    label_title.configure(text=cn)
-    for v in base_info_jl:
-        tree.insert("", 0, values=(v, base_info_jl[v]))
-    label_xiangqing.configure(text=base_info_xq['subject'])
-    return 0
+img = tkinter.PhotoImage('resources/1.png')
+label_img = tkinter.Label(app,image=img)
 
+label_br = tkinter.Label(app, text='---------------------------------------------------------------', padx=10, pady=15)
 
-def select_tree(event, label_xiangqing):
-    for item in tree.selection():
-        item_text = tree.item(item, "values")
-        label_xiangqing.configure(text=base_info_xq[item_text[0]])
-        print(label_xiangqing)
-
-
-def select_adapt(fun, **kwds):
-    return lambda event, fun=fun, kwds=kwds: fun(event, **kwds)
-
-
-# file_path = "/Users/maxd/Downloads/1.pem"
-
-app = tkinter.Tk()
-app.title("CertViewer")
-app.geometry('450x600')
-app.resizable(0, 0)
-tree = ttk.Treeview(master=app, show="headings", height=12)
-tree["columns"] = ("字段", "值")
-tree.column("字段", width=150)
-tree.column("值", width=260)
-tree.heading("字段", text="字段")
-tree.heading("值", text="值")
-
-label_title = tkinter.Label(app, text='', padx=10, pady=15)
-label_xiangqing = tkinter.Label(app, text='', padx=10, pady=10, width=43, height=10, bg="white", justify="left",
-                                anchor='nw', wraplength='400')
-
+label_img.grid(column=0, row=0)
 label_title.grid(padx=20, )
-tree.grid(padx=20, )
-label_xiangqing.grid(padx=20, sticky="w", pady=20)
+label_br.grid()
 
-open_file_button = tkinter.Button(app, text='打开文件', command=lambda: file_load(tree, label_xiangqing, label_title))
-open_file_button.grid(padx=5, pady=5)
-tree.bind('<<TreeviewSelect>>', select_adapt(select_tree, label_xiangqing=label_xiangqing))
+print(base_info)
+for k in base_info:
+    label_k = tkinter.Label(app, text=k, padx=5, pady=5,justify='left', anchor='nw')
+    label_v = tkinter.Label(app, text=base_info[k], padx=25, pady=0,justify='left',anchor='nw')
+    label_k.grid(sticky="w",)
+    label_v.grid(sticky="w",)
+# 打开文件
+# open_file_button = tkinter.Button(app, text='打开文件', command=lambda: file_load(cert_info, label_title))
+# open_file_button.grid(padx=5, pady=5)
+
+scroll_bar = tkinter.Scrollbar(app,)
+scroll_bar.grid(sticky="w")
+scroll_bar.config(command=app.yview)
+app.pack(side="left")
 
 # 进入消息循环
-app.mainloop()
+root.mainloop()
